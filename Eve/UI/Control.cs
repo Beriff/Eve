@@ -27,6 +27,14 @@ namespace Eve.UI
         // Hierarchy
         public Control? Parent;
         public List<Control> Children = [];
+        public string Name;
+
+        public T WithChildren<T>(params Control[] children) where T : Control
+        {
+            foreach (var c in children) { c.Parent = this; }
+            Children = [..children];
+            return (T)this;
+        }
 
         // Positioning
         public LayoutUnit Position { get; set; } = LayoutUnit.Zero;
@@ -47,7 +55,7 @@ namespace Eve.UI
         {
             return PixelPosition - (relTo?.PixelPosition ?? Vector2.Zero);
         }
-        protected Vector2 ParentRelativePosition { get => GetRelativePosition(Parent); }
+        protected Vector2 ParentRelativePosition { get => Position.Normalize(GetParentSize()); }
 
         public Vector2 PixelSize => Size.Normalize(GetParentSize());
         public Vector2 PixelPosition => Position.Normalize(GetParentSize()) - PixelSize * Origin;
@@ -62,23 +70,30 @@ namespace Eve.UI
         {
             if(NeedsRedraw)
             {
-                // generate new texture
+                // create own texture container
                 LocalRenderTarget = new(sb.GraphicsDevice, (int)PixelSize.X, (int)PixelSize.Y);
+                // get (or generate) children textures
+                var childTextures = Children.Select(x => x.GetRenderTarget(sb)).ToList();
 
                 sb.GraphicsDevice.SetRenderTarget(LocalRenderTarget);
                 sb.GraphicsDevice.Clear(Color.Black);
 
                 sb.Begin();
                 DrawControl(sb);
-                foreach (var child in Children)
+                sb.End();
+
+                sb.Begin();
+                for(int i = 0; i < childTextures.Count; i++)
                 {
-                    sb.Draw(child.GetRenderTarget(sb), child.ParentRelativePosition, Color.White);
+                    sb.Draw(childTextures[i], Children[i].PixelPosition, Color.White);
                 }
+                sb.End();
+
+                sb.Begin();
                 DrawControlTop(sb);
                 sb.End();
 
                 NeedsRedraw = false;
-                sb.GraphicsDevice.SetRenderTarget(null);
                 return LocalRenderTarget;
 
             } else { return LocalRenderTarget; }

@@ -32,7 +32,11 @@ namespace Eve
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             Control.Initialize(GraphicsDevice);
-            Panel = new() { Size = LayoutUnit.FromRel(new(.5f,.5f)), PanelColor = Color.Blue };
+
+            Panel = new Panel() { Size = LayoutUnit.FromRel(.5f), PanelColor = Color.Blue}
+                .WithChildren<Panel>(
+                    new Panel() { Size = LayoutUnit.FromRel(1f), Position = LayoutUnit.FromRel(.5f), PanelColor = Color.Green }
+                );
         }
 
         protected override void Update(GameTime gameTime)

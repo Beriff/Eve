@@ -8,9 +8,13 @@ namespace Eve.Model
         public Vector2 Absolute = abs;
 
         public static LayoutUnit FromRel(Vector2 rel) => new(rel, Vector2.Zero);
+        public static LayoutUnit FromRel(float x, float y) => new(new(x, y), Vector2.Zero);
+        public static LayoutUnit FromRel(float v) => new(new(v, v), Vector2.Zero);
         public static LayoutUnit FromAbs(Vector2 abs) => new(Vector2.One, abs);
-        public static LayoutUnit Full { get => FromRel(new(1,1)); }
-        public static LayoutUnit Zero { get => FromAbs(Vector2.Zero); }
+        public static LayoutUnit FromAbs(float x, float y) => new(Vector2.One, new(x, y));
+        public static LayoutUnit FromAbs(float v) => new(Vector2.One, new(v, v));
+        public static LayoutUnit Full { get => FromRel(1); }
+        public static LayoutUnit Zero { get => FromAbs(0); }
         public readonly Vector2 Normalize(Vector2 metric) => metric * Relative + Absolute;
         public LayoutUnit(float rx, float ry, float ax, float ay)
             : this(new(rx, ry), new(ax, ay)) { }

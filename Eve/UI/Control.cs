@@ -6,6 +6,11 @@ using System.Linq;
 
 namespace Eve.UI
 {
+    /// <summary>
+    /// Static control resources such as textures for backgrounds and rounded corners.
+    /// Generated automatically upon initial request (given <see cref="Control.MainGraphicsDevice">MainGraphicsDevice</see>
+    /// was set beforehand)
+    /// </summary>
     public static class ControlResources
     {
         public static Texture2D UnitTexture;
@@ -17,12 +22,16 @@ namespace Eve.UI
         }
     }
 
+    /// <summary>
+    /// Base UI Control class, implementing positioning and hierarchical logic.
+    /// Rendering implementation is left to the inheriting classes
+    /// </summary>
     public class Control
     {
+        // Root viewport used for relative positioning when there are no parent controls
+        // (positionment relative to the window size)
         public static Viewport RootViewport;
-        public static Stack<RenderTarget2D> RenderTargets = [];
         public static GraphicsDevice MainGraphicsDevice;
-        public static RenderTarget2D CurrentRenderTarget => RenderTargets.Peek();
 
         // Hierarchy
         public Control? Parent;
@@ -35,6 +44,8 @@ namespace Eve.UI
             Children = [..children];
             return (T)this;
         }
+
+        public Control WithChildren(params Control[] children) => WithChildren<Control>(children);
 
         // Positioning
         public LayoutUnit Position { get; set; } = LayoutUnit.Zero;
@@ -51,14 +62,12 @@ namespace Eve.UI
         }
 
         protected Vector2 GetParentSize() => Parent?.PixelSize ?? RootViewport.Bounds.Size.ToVector2();
-        protected Vector2 GetRelativePosition(Control? relTo)
-        {
-            return PixelPosition - (relTo?.PixelPosition ?? Vector2.Zero);
-        }
-        protected Vector2 ParentRelativePosition { get => Position.Normalize(GetParentSize()); }
 
         public Vector2 PixelSize => Size.Normalize(GetParentSize());
+        // PixelPosition is relative to the parent's PixelPosition
         public Vector2 PixelPosition => Position.Normalize(GetParentSize()) - PixelSize * Origin;
+        // AbsolutePosition is relative to the RootViewport
+        public Vector2 AbsolutePosition => (Parent?.AbsolutePosition ?? Vector2.Zero) + PixelPosition;
 
         // Rendering
         protected RenderTarget2D LocalRenderTarget;
@@ -99,6 +108,10 @@ namespace Eve.UI
             } else { return LocalRenderTarget; }
         }
 
+        /// <summary>
+        /// Sets <see cref="NeedsRedraw">NeedsRedraw</see> flag to <c>true</c>
+        /// and propagates it upstream
+        /// </summary>
         public void RequestRedraw()
         {
             NeedsRedraw = true;

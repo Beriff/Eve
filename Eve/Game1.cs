@@ -1,5 +1,6 @@
 ﻿using Eve.Model;
 using Eve.UI;
+using Eve.UI.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -11,7 +12,7 @@ namespace Eve
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        public UI.Panel Panel;
+        public UIGroup Group;
 
         public Game1()
         {
@@ -30,13 +31,22 @@ namespace Eve
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
             Control.Initialize(GraphicsDevice);
+            Group = new();
 
-            Panel = new Panel() { Size = LayoutUnit.FromRel(.5f), PanelColor = Color.Blue}
-                .WithChildren<Panel>(
-                    new Panel() { Size = LayoutUnit.FromRel(1f), Position = LayoutUnit.FromRel(.5f), PanelColor = Color.Green }
-                );
+            Group +=
+            new Panel() 
+            { Size = LayoutUnit.FromRel(.5f), PanelColor = Color.Blue}
+            .WithChildren<Panel>(
+
+                new Panel() 
+                { Size = LayoutUnit.FromRel(.5f), Position = LayoutUnit.FromRel(.5f), PanelColor = Color.Green }
+                .WithChildren(
+
+                    new Panel()
+                    { Size = LayoutUnit.Full, Origin = new(.5f), PanelColor = Color.White }
+                )
+            );
         }
 
         protected override void Update(GameTime gameTime)
@@ -51,16 +61,7 @@ namespace Eve
 
         protected override void Draw(GameTime gameTime)
         {
-            var texture = Panel.GetRenderTarget(_spriteBatch);
-
-            GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-            _spriteBatch.Begin();
-
-            _spriteBatch.Draw(texture, Vector2.Zero, Color.White);
-
-            _spriteBatch.End();
-
+            Group.Render(_spriteBatch);
             base.Draw(gameTime);
         }
     }

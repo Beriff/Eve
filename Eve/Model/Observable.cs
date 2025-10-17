@@ -13,5 +13,7 @@ namespace Eve.Model
 
         public static implicit operator Observable<T>(T val) { return new Observable<T>(val); }
         public static implicit operator T(Observable<T> val) { return val.Value; }
+
+        public override string? ToString() => Value!.ToString();
     }
 }

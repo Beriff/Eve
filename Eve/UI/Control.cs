@@ -1,4 +1,5 @@
 ﻿using Eve.Model;
+using Eve.UI.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace Eve.UI
             get
             {
                 var size = PixelSize;
-                var pos = PixelPosition;
+                var pos = AbsolutePosition;
                 return new(new((int)pos.X, (int)pos.Y), new((int)size.X, (int)size.Y));
             }
         }
@@ -126,6 +127,17 @@ namespace Eve.UI
             var observable = new Observable<T>(value);
             observable.Updated += _ => RequestRedraw();
             return observable;
+        }
+
+        // Update logic
+        public List<ControlInputModule> InputModules { get; set; } = [];
+        public virtual void HandleInputTunneling(InputEvent @event) 
+        {
+            foreach (var module in InputModules) module.HandleTunneling(@event);
+        }
+        public virtual void HandleInputBubbling(InputEvent @event)
+        {
+            foreach (var module in InputModules) module.HandleBubbling(@event);
         }
 
         public static void Initialize(GraphicsDevice gdev)

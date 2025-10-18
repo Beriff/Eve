@@ -1,9 +1,11 @@
 ﻿using Eve.Model;
 using Eve.UI;
+using Eve.UI.ControlModules.Input;
 using Eve.UI.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Eve
 {
@@ -36,7 +38,7 @@ namespace Eve
 
             Group +=
             new Panel() 
-            { Size = LayoutUnit.FromRel(.5f), PanelColor = Color.Blue}
+            { Size = LayoutUnit.FromRel(.5f), PanelColor = Color.Blue, InputModules = [new ClickInputModule()] }
             .WithChildren<Panel>(
 
                 new Panel() 
@@ -54,8 +56,7 @@ namespace Eve
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-
+            Group.Update();
             base.Update(gameTime);
         }
 

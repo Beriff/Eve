@@ -37,18 +37,8 @@ namespace Eve
             Group = new();
 
             Group +=
-            new Panel() 
-            { Size = LayoutUnit.FromRel(.5f), PanelColor = Color.Blue, InputModules = [new ClickInputModule()] }
-            .WithChildren<Panel>(
-
-                new Panel() 
-                { Size = LayoutUnit.FromRel(.5f), Position = LayoutUnit.FromRel(.5f), PanelColor = Color.Green }
-                .WithChildren(
-
-                    new Panel()
-                    { Size = LayoutUnit.Full, Origin = new(.5f), PanelColor = Color.White }
-                )
-            );
+            new TilePanel()
+            { Size = LayoutUnit.FromAbs(200) };
         }
 
         protected override void Update(GameTime gameTime)

@@ -8,22 +8,6 @@ using System.Linq;
 namespace Eve.UI
 {
     /// <summary>
-    /// Static control resources such as textures for backgrounds and rounded corners.
-    /// Generated automatically upon initial request (given <see cref="Control.MainGraphicsDevice">MainGraphicsDevice</see>
-    /// was set beforehand)
-    /// </summary>
-    public static class ControlResources
-    {
-        public static Texture2D UnitTexture;
-        static ControlResources()
-        {
-            // generate unit texture (a single white pixel)
-            UnitTexture = new(Control.MainGraphicsDevice, 1, 1);
-            UnitTexture.SetData([Color.White]);
-        }
-    }
-
-    /// <summary>
     /// Base UI Control class, implementing positioning and hierarchical logic.
     /// Rendering implementation is left to the inheriting classes
     /// </summary>
@@ -86,7 +70,7 @@ namespace Eve.UI
                 var childTextures = Children.Select(x => x.GetRenderTarget(sb)).ToList();
 
                 sb.GraphicsDevice.SetRenderTarget(LocalRenderTarget);
-                sb.GraphicsDevice.Clear(Color.Black);
+                sb.GraphicsDevice.Clear(Color.Transparent);
 
                 sb.Begin();
                 DrawControl(sb);

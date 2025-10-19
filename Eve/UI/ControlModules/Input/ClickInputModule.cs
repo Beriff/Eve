@@ -42,7 +42,6 @@ namespace Eve.UI.ControlModules.Input
                 {
                     LMBClickedInside = false;
                     OnLeftClick.Invoke(mEvent.MouseInfo);
-                    Console.WriteLine("dag");
                 }
 
                 if (mEvent.MouseInfo.MMBPressType == ButtonPressType.Pressed)

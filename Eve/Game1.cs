@@ -34,11 +34,15 @@ namespace Eve
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Control.Initialize(GraphicsDevice);
+            Theme.Initialize(Content);
+
             Group = new();
 
-            Group +=
-            new TilePanel()
-            { Size = LayoutUnit.FromAbs(200) };
+            var button = ButtonFactory.SimpleButton.GetInstance();
+            button.FindInputModule<ClickInputModule>()!.OnLeftClick += (_) => Console.WriteLine("hi");
+            button.Size = LayoutUnit.FromAbs(100, 50);
+
+            Group += button;
         }
 
         protected override void Update(GameTime gameTime)

@@ -2,6 +2,7 @@
 using Eve.UI.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +12,7 @@ namespace Eve.UI
     /// Base UI Control class, implementing positioning and hierarchical logic.
     /// Rendering implementation is left to the inheriting classes
     /// </summary>
-    public class Control
+    public class Control : ICloneable
     {
         // Root viewport used for relative positioning when there are no parent controls
         // (positionment relative to the window size)
@@ -44,6 +45,13 @@ namespace Eve.UI
                 var pos = AbsolutePosition;
                 return new(new((int)pos.X, (int)pos.Y), new((int)size.X, (int)size.Y));
             }
+        }
+
+        public Control WithPlacement(LayoutUnit position, LayoutUnit size)
+        {
+            Position = position;
+            Size = size;
+            return this;
         }
 
         protected Vector2 GetParentSize() => Parent?.PixelSize ?? RootViewport.Bounds.Size.ToVector2();
@@ -115,9 +123,11 @@ namespace Eve.UI
 
         // Update logic
         public List<ControlInputModule> InputModules { get; set; } = [];
-        public virtual void HandleInputTunneling(InputEvent @event) 
+        public T? FindInputModule<T>() where T : ControlInputModule
+            => (T?)InputModules.Find(m => m is T);
+        public virtual void HandleInputTunnelling(InputEvent @event) 
         {
-            foreach (var module in InputModules) module.HandleTunneling(@event);
+            foreach (var module in InputModules) module.HandleTunnelling(@event);
         }
         public virtual void HandleInputBubbling(InputEvent @event)
         {
@@ -129,6 +139,33 @@ namespace Eve.UI
             MainGraphicsDevice = gdev;
             RootViewport = gdev.Viewport;
             gdev.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
+        }
+
+        protected virtual void CloneBaseProperties(Control control)
+        {
+            control.Name = Name;
+            control.Position = Position;
+            control.Size = Size;
+            control.Origin = Origin;
+            control.InputModules = InputModules.Select(module => module.Clone() as ControlInputModule).ToList()!;
+
+            control.WithChildren<Control>(
+                Children.Select(child => child.Clone() as Control).ToArray()!
+            );
+        }
+        protected virtual void CloneLocalProperties(Control control) { }
+
+        /// <summary>
+        /// Cloning a control copies all of its children and parents them properly,
+        /// however it does *not* clone the parent.
+        /// </summary>
+        public virtual object Clone()
+        {
+            var control = new Control();
+            CloneBaseProperties(control);
+            CloneLocalProperties(control);
+
+            return control;
         }
     }
 }

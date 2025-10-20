@@ -11,9 +11,8 @@ namespace Eve.UI.Controls
     /// A panel control consisting of 9 tiles: 4 for corners, 4 for sides and one for the inside
     /// Each part is stretched accordingly.
     /// </summary>
-    public class TilePanel : Control
+    public class TilePanel : Panel
     {
-        public Observable<Color> PanelColor { get => field; set => field = GetLocalObservable(value.Value); } = Color.White;
         public Observable<int> BorderRadius { get => field; set => field = GetLocalObservable(value.Value); } = 10;
 
         protected override void DrawControl(SpriteBatch sb)
@@ -84,6 +83,13 @@ namespace Eve.UI.Controls
                 null,
                 PanelColor
                 );
+        }
+
+        public override object Clone()
+        {
+            var clone = base.Clone() as TilePanel;
+            clone!.BorderRadius = BorderRadius;
+            return clone;
         }
     }
 }

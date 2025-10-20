@@ -65,7 +65,7 @@ namespace Eve.UI
                 // tunneling phase (root -> leaf)
                 foreach(var child in path)
                 {
-                    child.HandleInputTunneling(@event);
+                    child.HandleInputTunnelling(@event);
                     if (@event.Consumed) return;
                 }
 

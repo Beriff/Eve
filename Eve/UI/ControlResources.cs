@@ -26,23 +26,6 @@ namespace Eve.UI
             UnitTexture.SetData([Color.White]);
         }
 
-        private static T[] Flatten<T>(T[,] arr)
-        {
-            int rows = arr.GetLength(0);
-            int cols = arr.GetLength(1);
-            T[] result = new T[rows * cols];
-
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < cols; j++)
-                {
-                    result[i * cols + j] = arr[i, j];
-                }
-            }
-
-            return result;
-        }
-
         public static Texture2D GetRoundedCorner(float radius)
         {
             if(RoundedCorners.TryGetValue(radius, out var value)) return value;

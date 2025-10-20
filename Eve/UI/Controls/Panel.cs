@@ -18,5 +18,19 @@ namespace Eve.UI.Controls
                 PanelColor
                 );
         }
+
+        protected override void CloneLocalProperties(Control control)
+        {
+            (control as Panel)!.PanelColor = PanelColor;
+        }
+
+        public override object Clone()
+        {
+            var panel = new Panel();
+            CloneBaseProperties(panel);
+            CloneLocalProperties(panel);
+
+            return panel;
+        }
     }
 }

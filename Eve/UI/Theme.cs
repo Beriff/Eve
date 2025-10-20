@@ -9,7 +9,7 @@ namespace Eve.UI
     public static class Theme
     {
         public static FontSystem Font;
-        private static Dictionary<int, DynamicSpriteFont> FontBases;
+        private static Dictionary<int, DynamicSpriteFont> FontBases = [];
 
         public static void Initialize(ContentManager content)
         {

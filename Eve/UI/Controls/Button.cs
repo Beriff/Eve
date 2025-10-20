@@ -1,4 +1,5 @@
-﻿using Eve.UI.ControlModules.Input;
+﻿using Eve.Model;
+using Eve.UI.ControlModules.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,11 +14,14 @@ namespace Eve.UI.Controls
 
         public CompositeControlBlueprint GetBlueprint()
         {
-            var composite_root = (Panel)Backdrop.Clone();
+            var composite_root = ((Panel)Backdrop.Clone()).WithChildren(
+                new Label() { Size = LayoutUnit.Full, Name = "ButtonLabel", Text = "Button" }
+            );
 
             // enable the button to capture the input and prevent it from
             // propagating to button's parents (tunnel handling)
             composite_root!.InputModules.Add(new ClickInputModule(tunnel: true));
+
 
             return new(composite_root);
         }

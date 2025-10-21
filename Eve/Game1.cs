@@ -38,11 +38,8 @@ namespace Eve
 
             Group = new();
 
-            var button = ButtonFactory.SimpleButton.GetInstance();
-            button.FindInputModule<ClickInputModule>()!.OnLeftClick += (_) => Console.WriteLine("hi");
-            button.Size = LayoutUnit.FromAbs(100, 50);
-
-            Group += button;
+            Group += new Panel()
+            { InputModules = [new DragInputModule(Group)], Size = LayoutUnit.FromAbs(100) };
         }
 
         protected override void Update(GameTime gameTime)

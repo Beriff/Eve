@@ -8,10 +8,22 @@ namespace Eve.UI.Input
 {
     public enum ButtonPressType
     {
-        Raised,     // released for >1 consecutive frames
-        Held,       // held for >1 consecutive frames
-        Pressed,    // been held for 1 frame
-        Released    // been released for 1 frame
+        /// <summary>
+        /// released for >1 consecutive frames
+        /// </summary>
+        Raised,
+        /// <summary>
+        /// held for >1 consecutive frames
+        /// </summary>
+        Held,
+        /// <summary>
+        /// been held for 1 frame
+        /// </summary>
+        Pressed,
+        /// <summary>
+        /// been released for 1 frame
+        /// </summary>
+        Released
     }
     public readonly record struct KeyPressInfo(Keys key, ButtonPressType pType)
     {

@@ -9,15 +9,15 @@ namespace Eve.UI
     /// Modular unit attachable to any control. Extends default capabilities
     /// (ex. handling click logic)
     /// </summary>
-    public abstract class ControlModule : ICloneable 
+    public abstract class ControlModule() : ICloneable 
     {
         public abstract object Clone();
     }
 
     public class ControlInputModule : ControlModule
     {
-        public virtual void HandleTunnelling(InputEvent @event) { }
-        public virtual void HandleBubbling(InputEvent @event) { }
+        public virtual void HandleTunnelling(Control self, InputEvent @event) { }
+        public virtual void HandleBubbling(Control self, InputEvent @event) { }
 
         public override object Clone()
         {

@@ -13,6 +13,7 @@ namespace Eve.UI
     {
         public Control Root { get; set; }
         public InputController InputController { get; set; }
+        public List<Control> ModalControls { get; set; } = [];
 
         public void operator+=(Control c)
         {
@@ -32,16 +33,24 @@ namespace Eve.UI
             sb.GraphicsDevice.Clear(Color.CornflowerBlue);
             sb.Begin();
 
-            sb.Draw(texture, Vector2.Zero, Color.White);
+            sb.Draw(texture, Root.AbsolutePosition, Color.White);
 
             sb.End();
         }
+
+        public void SetModal(Control control) { ModalControls.Add(control); }
+        public void RemoveModal(Control control) { ModalControls.Remove(control); }
 
         public UIGroup()
         {
             InputController = new InputController();
             InputController.MouseEvent += (@event) =>
             {
+                // update modal controls first
+                // even if the event gets consumed, we must update all the modals
+                for(int i = 0; i < ModalControls.Count; i++) ModalControls[i].HandleInputBubbling(@event);
+                if (@event.Consumed) return;
+
                 var mPos = @event.MouseInfo.Position;
                 List<Control> path = [];
                 Control currentControl = Root!;

@@ -8,6 +8,7 @@ namespace Eve.UI.ControlModules.Input
 {
     public class ClickInputModule(bool tunnel = false) : ControlInputModule
     {
+
         public event Action<MouseInfo> OnRightClick = new(_ => { });
         public event Action<MouseInfo> OnLeftClick = new(_ => { });
         public event Action<MouseInfo> OnMiddleClick = new(_ => { });
@@ -20,7 +21,7 @@ namespace Eve.UI.ControlModules.Input
 
         protected bool TunnellingMode = tunnel;
 
-        public override void HandleTunnelling(InputEvent @event)
+        public override void HandleTunnelling(Control self, InputEvent @event)
         {
             if (!TunnellingMode) return;
 
@@ -61,7 +62,7 @@ namespace Eve.UI.ControlModules.Input
             }
         }
 
-        public override void HandleBubbling(InputEvent @event)
+        public override void HandleBubbling(Control self, InputEvent @event)
         {
             if (TunnellingMode) return;
 

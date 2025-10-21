@@ -34,9 +34,9 @@ namespace Eve.UI
         public Control WithChildren(params Control[] children) => WithChildren<Control>(children);
 
         // Positioning
-        public LayoutUnit Position { get; set; } = LayoutUnit.Zero;
-        public LayoutUnit Size { get; set; } = LayoutUnit.Full;
-        public Vector2 Origin { get; set; } = Vector2.Zero;
+        public Observable<LayoutUnit> Position { get; set => field = GetLocalObservable(value.Value); } = LayoutUnit.Zero;
+        public Observable<LayoutUnit> Size { get; set => field = GetLocalObservable(value.Value); } = LayoutUnit.Full;
+        public Observable<Vector2> Origin { get; set => field = GetLocalObservable(value.Value); } = Vector2.Zero;
         public Rectangle Bounds
         {
             get
@@ -56,9 +56,9 @@ namespace Eve.UI
 
         protected Vector2 GetParentSize() => Parent?.PixelSize ?? RootViewport.Bounds.Size.ToVector2();
 
-        public Vector2 PixelSize => Size.Normalize(GetParentSize());
+        public Vector2 PixelSize => Size.Value.Normalize(GetParentSize());
         // PixelPosition is relative to the parent's PixelPosition
-        public Vector2 PixelPosition => Position.Normalize(GetParentSize()) - PixelSize * Origin;
+        public Vector2 PixelPosition => Position.Value.Normalize(GetParentSize()) - PixelSize * Origin;
         // AbsolutePosition is relative to the RootViewport
         public Vector2 AbsolutePosition => (Parent?.AbsolutePosition ?? Vector2.Zero) + PixelPosition;
 
@@ -127,11 +127,11 @@ namespace Eve.UI
             => (T?)InputModules.Find(m => m is T);
         public virtual void HandleInputTunnelling(InputEvent @event) 
         {
-            foreach (var module in InputModules) module.HandleTunnelling(@event);
+            foreach (var module in InputModules) module.HandleTunnelling(this, @event);
         }
         public virtual void HandleInputBubbling(InputEvent @event)
         {
-            foreach (var module in InputModules) module.HandleBubbling(@event);
+            foreach (var module in InputModules) module.HandleBubbling(this, @event);
         }
 
         public static void Initialize(GraphicsDevice gdev)

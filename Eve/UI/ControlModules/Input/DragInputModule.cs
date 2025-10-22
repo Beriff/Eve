@@ -15,6 +15,7 @@ namespace Eve.UI.ControlModules.Input
         public bool ConsumeEvent { get; set; } = true;
 
         protected UIGroup ParentGroup = group;
+        protected Vector2 GrabOffset;
 
         // optionally restricts dragging to a single axis (null = no restriction)
         public Axis? AxisRestriction { get; set; } = axisRestriction;
@@ -26,8 +27,11 @@ namespace Eve.UI.ControlModules.Input
                 if (mEvent.MouseInfo.LMBPressType == ButtonPressType.Pressed)
                 {
                     Grabbed = true;
-                    // make modal to intercept LMB raise from anywhere
                     ParentGroup.SetModal(self);
+
+                    // Store offset between mouse and control top-left
+                    GrabOffset = mEvent.MouseInfo.Position - self.AbsolutePosition;
+
                     @event.Consumed = true;
                 }
                 else if (mEvent.MouseInfo.LMBPressType == ButtonPressType.Released)
@@ -36,16 +40,18 @@ namespace Eve.UI.ControlModules.Input
                     ParentGroup.RemoveModal(self);
                     @event.Consumed = true;
                 }
-
-                // handle dragging
-                else
+                else if (Grabbed)
                 {
-                    if (!Grabbed) return;
-                    var delta = mEvent.MouseInfo.Delta;
-                    if (AxisRestriction == Axis.Vertical) { delta.X = 0; }
-                    else if (AxisRestriction == Axis.Horizontal) { delta.Y = 0; }
+                    var mousePos = mEvent.MouseInfo.Position;
 
-                    self.Position.Value = self.Position.Value with { Absolute = self.Position.Value.Absolute + delta };
+                    // Compute new position so that the offset is preserved
+                    var newPos = mousePos - GrabOffset;
+
+                    if (AxisRestriction == Axis.Vertical) newPos.X = self.Position.Value.Absolute.X;
+                    else if (AxisRestriction == Axis.Horizontal) newPos.Y = self.Position.Value.Absolute.Y;
+
+                    self.Position.Value = self.Position.Value with { Absolute = newPos };
+                    @event.Consumed = true;
                 }
             }
         }

@@ -68,7 +68,7 @@ namespace Eve.UI
 
         protected virtual void DrawControl(SpriteBatch sb) { }
         protected virtual void DrawControlTop(SpriteBatch sb) { }
-        public RenderTarget2D GetRenderTarget(SpriteBatch sb)
+        public virtual RenderTarget2D GetRenderTarget(SpriteBatch sb)
         {
             if(NeedsRedraw)
             {

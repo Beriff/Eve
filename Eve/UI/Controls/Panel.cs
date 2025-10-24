@@ -9,7 +9,7 @@ namespace Eve.UI.Controls
 {
     public class Panel : Control
     {
-        public Observable<Color> PanelColor { get => field; set => field = GetLocalObservable(value.Value); } = Color.White;
+        public Observable<Color> PanelColor { get; set => field = GetLocalObservable(value.Value); } = Color.White;
         protected override void DrawControl(SpriteBatch sb)
         {
             sb.Draw(

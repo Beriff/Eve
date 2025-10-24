@@ -38,8 +38,9 @@ namespace Eve
 
             Group = new();
 
-            Group += new Panel()
-            { InputModules = [new DragInputModule(Group)], Size = LayoutUnit.FromAbs(100) };
+            Group += new VScrollbar(Group, thumb: new TilePanel() { BorderRadius = 5 })
+            { Position = LayoutUnit.FromAbs(10), Size = LayoutUnit.FromAbs(8, 150) };
+
         }
 
         protected override void Update(GameTime gameTime)

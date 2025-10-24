@@ -26,6 +26,8 @@ namespace Eve.UI.ControlModules.Input
             {
                 if (mEvent.MouseInfo.LMBPressType == ButtonPressType.Pressed)
                 {
+                    //self.Position.Updated += v => self.RequestRedraw();
+
                     Grabbed = true;
                     ParentGroup.SetModal(self);
 
@@ -33,6 +35,7 @@ namespace Eve.UI.ControlModules.Input
                     GrabOffset = mEvent.MouseInfo.Position - self.AbsolutePosition;
 
                     @event.Consumed = true;
+                    
                 }
                 else if (mEvent.MouseInfo.LMBPressType == ButtonPressType.Released)
                 {
@@ -45,7 +48,7 @@ namespace Eve.UI.ControlModules.Input
                     var mousePos = mEvent.MouseInfo.Position;
 
                     // Compute new position so that the offset is preserved
-                    var newPos = mousePos - GrabOffset;
+                    var newPos = mousePos - GrabOffset - (self.Parent?.AbsolutePosition ?? Vector2.Zero);
 
                     if (AxisRestriction == Axis.Vertical) newPos.X = self.Position.Value.Absolute.X;
                     else if (AxisRestriction == Axis.Horizontal) newPos.Y = self.Position.Value.Absolute.Y;

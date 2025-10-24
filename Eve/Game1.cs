@@ -39,7 +39,12 @@ namespace Eve
             Group = new();
 
             Group += new VScrollbar(Group, thumb: new TilePanel() { BorderRadius = 5 })
-            { Position = LayoutUnit.FromAbs(10), Size = LayoutUnit.FromAbs(8, 150) };
+            { Position = LayoutUnit.FromAbs(20), Size = LayoutUnit.FromAbs(8, 150) };
+
+            /*Group += new Panel()
+            { PanelColor = Color.Black, Position = LayoutUnit.FromAbs(20), Size = LayoutUnit.FromAbs(8, 150) }.WithChildren(
+                new Panel() { Size = new LayoutUnit(1,0, 0, 5), InputModules = [new DragInputModule(Group, DragInputModule.Axis.Vertical)] }
+            );*/
 
         }
 

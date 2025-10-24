@@ -36,11 +36,10 @@ namespace Eve.UI.Controls
             // update ThumbProgress
             Thumb.Value.Position.Updated += v =>
             {
-                // Avoid settinh ThumbProgress implicitly because it will invoke
-                // Thumb.Value.Position.Updated (this event) which causes
-                // circular invokation
-                ThumbProgress.QuietSet(v.Relative.Y / (1 - ThumbSize));
-                Thumb.Value.RequestRedraw();
+                var abs_size = Background.Value.PixelSize.Y - Thumb.Value.PixelSize.Y;
+
+                ThumbProgress.Value = v.Absolute.Y / abs_size;
+                //Thumb.Value.RequestRedraw();
                 Thumb.Value.Size.Value = new LayoutUnit(0, ThumbSize, Thumb.Value.PixelSize.X, 0);
             };
             
@@ -48,7 +47,9 @@ namespace Eve.UI.Controls
             // make ThumbProgress and ThumbSize update the actual thumb
             ThumbProgress.Updated += v =>
             {
-                Thumb.Value.Position.Value = LayoutUnit.FromRel(0, v * (1 - ThumbSize));
+                v = Math.Clamp(v, 0, 1);
+                Thumb.Value.Position.QuietSet(LayoutUnit.FromRel(0, v * (1 - ThumbSize)));
+                Thumb.Value.RequestRedraw();
             };
             
             ThumbSize.Updated += v =>

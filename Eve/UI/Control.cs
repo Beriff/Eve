@@ -34,9 +34,9 @@ namespace Eve.UI
         public Control WithChildren(params Control[] children) => WithChildren<Control>(children);
 
         // Positioning
-        public Observable<LayoutUnit> Position { get; set => field = GetLocalObservable(value.Value); } = LayoutUnit.Zero;
-        public Observable<LayoutUnit> Size { get; set => field = GetLocalObservable(value.Value); } = LayoutUnit.Full;
-        public Observable<Vector2> Origin { get; set => field = GetLocalObservable(value.Value); } = Vector2.Zero;
+        public Observable<LayoutUnit> Position { get; set => field = GetLocalObservable(value.Value); }
+        public Observable<LayoutUnit> Size { get; set => field = GetLocalObservable(value.Value); }
+        public Observable<Vector2> Origin { get; set => field = GetLocalObservable(value.Value); }
         public Rectangle Bounds
         {
             get
@@ -166,6 +166,14 @@ namespace Eve.UI
             CloneLocalProperties(control);
 
             return control;
+        }
+
+        public Control()
+        {
+            Name = "";
+            Position = GetLocalObservable(LayoutUnit.Zero);
+            Size = GetLocalObservable(LayoutUnit.Full);
+            Origin = GetLocalObservable(Vector2.Zero);
         }
     }
 }

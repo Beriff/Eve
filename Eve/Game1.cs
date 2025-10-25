@@ -38,8 +38,8 @@ namespace Eve
 
             Group = new();
 
-            Group += new VScrollbar(Group, thumb: new TilePanel() { BorderRadius = 5 })
-            { Position = LayoutUnit.FromAbs(20), Size = LayoutUnit.FromAbs(8, 150) };
+            Group += new HScrollbar(Group, thumb: new TilePanel() { BorderRadius = 5 })
+            { Position = LayoutUnit.FromAbs(20), Size = LayoutUnit.FromAbs(150, 8) };
 
             /*Group += new Panel()
             { PanelColor = Color.Black, Position = LayoutUnit.FromAbs(20), Size = LayoutUnit.FromAbs(8, 150) }.WithChildren(

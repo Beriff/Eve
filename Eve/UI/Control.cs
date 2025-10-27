@@ -22,7 +22,7 @@ namespace Eve.UI
         // Hierarchy
         public Control? Parent;
         public List<Control> Children = [];
-        public string Name;
+        public string Name = "Control";
 
         public T WithChildren<T>(params Control[] children) where T : Control
         {
@@ -141,13 +141,14 @@ namespace Eve.UI
             gdev.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
         }
 
-        protected virtual void CloneBaseProperties(Control control)
+        protected virtual void CloneBaseProperties(Control control, bool copyInputModules = true)
         {
             control.Name = Name;
-            control.Position = Position;
-            control.Size = Size;
-            control.Origin = Origin;
-            control.InputModules = InputModules.Select(module => module.Clone() as ControlInputModule).ToList()!;
+            control.Position.Value = Position.Value;
+            control.Size.Value = Size.Value;
+            control.Origin.Value = Origin.Value;
+            if(copyInputModules)
+                control.InputModules = InputModules.Select(module => module.Clone() as ControlInputModule).ToList()!;
 
             control.WithChildren<Control>(
                 Children.Select(child => child.Clone() as Control).ToArray()!
@@ -175,5 +176,7 @@ namespace Eve.UI
             Size = GetLocalObservable(LayoutUnit.Full);
             Origin = GetLocalObservable(Vector2.Zero);
         }
+
+        public override string ToString() => Name;
     }
 }

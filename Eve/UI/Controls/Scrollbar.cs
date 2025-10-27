@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Eve.UI.Controls
@@ -19,11 +20,16 @@ namespace Eve.UI.Controls
 
         public VScrollbar(UIGroup g, Panel? background = null, Panel? thumb = null)
         {
-            Background = background ?? new Panel()
+            Background = background?.Clone() as Panel ?? new Panel()
             { PanelColor = Color.Gray, Name = "ScrollbarBg" };
 
-            Thumb = thumb ?? new Panel()
+            Thumb = thumb?.Clone() as Panel ?? new Panel()
             { PanelColor = Color.LightGray, Name = "ScrollbarThumb" };
+
+            // Clear DragInputModule (if it exists)
+            // since only one instance is allowed per control
+            if (Thumb.Value.FindInputModule<DragInputModule>() != null)
+                Thumb.Value.InputModules.Remove(Thumb.Value.FindInputModule<DragInputModule>()!);
 
             Thumb.Value.InputModules.Add(new DragInputModule(g, DragInputModule.Axis.Vertical));
 
@@ -68,6 +74,33 @@ namespace Eve.UI.Controls
         public override RenderTarget2D GetRenderTarget(SpriteBatch sb) => Background.Value.GetRenderTarget(sb);
         public override void HandleInputBubbling(InputEvent @event) => Background.Value.HandleInputBubbling(@event);
         public override void HandleInputTunnelling(InputEvent @event) => Background.Value.HandleInputTunnelling(@event);
+
+        public override object Clone()
+        {
+            var scrollbar = new VScrollbar(
+                Thumb.Value.FindInputModule<DragInputModule>()!.ParentGroup,
+                Background.Value, Thumb.Value
+                );
+
+            scrollbar.Name = Name;
+            scrollbar.Position.Value = Position.Value;
+            scrollbar.Size.Value = Size.Value;
+            scrollbar.Origin.Value = Origin.Value;
+
+            // set the thumb and background quick-access fields to their actual children
+            // (they're different since scrollbar() constructor creates new instances
+            // but CloneBaseProperties() clones the old ones)
+
+            /*scrollbar.Thumb.Value = (scrollbar.Children[0].Children[0] as Panel)!;
+            scrollbar.Background.Value = (scrollbar.Children[0] as Panel)!;
+            scrollbar.Thumb.Value.Position.Updated += v => Console.WriteLine(v);*/
+
+            Control[] a = [.. Children.Skip(2)];
+            Console.WriteLine(a.Count());
+            //scrollbar.WithChildren(a);
+
+            return scrollbar;
+        }
     }
 
     public class HScrollbar : Control
@@ -80,10 +113,10 @@ namespace Eve.UI.Controls
 
         public HScrollbar(UIGroup g, Panel? background = null, Panel? thumb = null)
         {
-            Background = background ?? new Panel()
+            Background = background?.Clone() as Panel ?? new Panel()
             { PanelColor = Color.Gray, Name = "ScrollbarBg" };
 
-            Thumb = thumb ?? new Panel()
+            Thumb = thumb?.Clone() as Panel ?? new Panel()
             { PanelColor = Color.LightGray, Name = "ScrollbarThumb" };
 
             Thumb.Value.InputModules.Add(new DragInputModule(g, DragInputModule.Axis.Horizontal));
@@ -129,5 +162,17 @@ namespace Eve.UI.Controls
         public override RenderTarget2D GetRenderTarget(SpriteBatch sb) => Background.Value.GetRenderTarget(sb);
         public override void HandleInputBubbling(InputEvent @event) => Background.Value.HandleInputBubbling(@event);
         public override void HandleInputTunnelling(InputEvent @event) => Background.Value.HandleInputTunnelling(@event);
+
+        public override object Clone()
+        {
+            var scrollbar = new HScrollbar(
+                Thumb.Value.FindInputModule<DragInputModule>()!.ParentGroup,
+                Background.Value, Thumb.Value
+                );
+            CloneBaseProperties(scrollbar);
+
+
+            return scrollbar;
+        }
     }
 }

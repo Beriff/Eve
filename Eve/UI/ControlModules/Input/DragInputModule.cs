@@ -14,7 +14,7 @@ namespace Eve.UI.ControlModules.Input
         public bool Grabbed { get; set; }
         public bool ConsumeEvent { get; set; } = true;
 
-        protected UIGroup ParentGroup = group;
+        public UIGroup ParentGroup = group;
         protected Vector2 GrabOffset;
 
         // optionally restricts dragging to a single axis (null = no restriction)
@@ -22,11 +22,13 @@ namespace Eve.UI.ControlModules.Input
 
         public override void HandleBubbling(Control self, InputEvent @event)
         {
+            
             if (@event is MouseInputEvent mEvent)
             {
                 if (mEvent.MouseInfo.LMBPressType == ButtonPressType.Pressed)
                 {
                     //self.Position.Updated += v => self.RequestRedraw();
+                    
 
                     Grabbed = true;
                     ParentGroup.SetModal(self);
@@ -45,10 +47,12 @@ namespace Eve.UI.ControlModules.Input
                 }
                 else if (Grabbed)
                 {
+                    
                     var mousePos = mEvent.MouseInfo.Position;
 
                     // Compute new position so that the offset is preserved
                     var newPos = mousePos - GrabOffset - (self.Parent?.AbsolutePosition ?? Vector2.Zero);
+                    
 
                     if (AxisRestriction == Axis.Vertical) newPos.X = self.Position.Value.Absolute.X;
                     else if (AxisRestriction == Axis.Horizontal) newPos.Y = self.Position.Value.Absolute.Y;

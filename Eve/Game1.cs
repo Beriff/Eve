@@ -38,7 +38,14 @@ namespace Eve
 
             Group = new();
 
-            Group += new HScrollbar(Group, thumb: new TilePanel() { BorderRadius = 5 })
+            Control scrollPanel = new ScrollPanelFactory(Group).GetBlueprint().GetInstance();
+            //Console.WriteLine((scrollPanel.Children[1] as VScrollbar).Thumb.Value.FindInputModule<DragInputModule>());
+            scrollPanel.Size = LayoutUnit.FromAbs(100, 50);
+            scrollPanel.Position = LayoutUnit.FromAbs(20);
+
+            Group += scrollPanel;
+
+            /*Group += new HScrollbar(Group, thumb: new TilePanel() { BorderRadius = 5 })
             { Position = LayoutUnit.FromAbs(20), Size = LayoutUnit.FromAbs(150, 8) };
 
             /*Group += new Panel()
@@ -52,6 +59,13 @@ namespace Eve
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            //Console.WriteLine( (Group.Root.Children[1] as VScrollbar).Thumb.Value.GetHashCode() );
+            //Console.WriteLine($"(DRAW) {Group.Root.Children[1].Children[0].Children[0].Name}: {Group.Root.Children[1].Children[0].Children[0].GetHashCode()}");
+            //Console.WriteLine($"{(Group.Root.Children[1] as VScrollbar).Thumb.Value.GetHashCode()} == {Group.Root.Children[1].Children[0].Children[0].GetHashCode()}");
+            //Console.WriteLine($"comparing {(Group.Root.Children[1] as VScrollbar).Thumb.Value.Name} and {Group.Root.Children[1].Children[0].Children[0].Name}");
+
+            //Console.WriteLine((Group.Root.Children[1] as VScrollbar).ThumbProgress);
 
             Group.Update();
             base.Update(gameTime);

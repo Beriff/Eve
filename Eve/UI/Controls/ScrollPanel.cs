@@ -34,7 +34,6 @@ namespace Eve.UI.Controls
             { PanelColor = Color.Yellow, Size = new LayoutUnit(1,1,-8,0) };
 
             var vscroll = ScrollbarVertical.Clone() as VScrollbar;
-            
 
             vscroll.Origin = new Vector2(1, 0);
             vscroll.Position = LayoutUnit.FromRel(1, 0);

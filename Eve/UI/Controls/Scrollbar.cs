@@ -22,6 +22,7 @@ namespace Eve.UI.Controls
         {
             Background = background?.Clone() as Panel ?? new Panel()
             { PanelColor = Color.Gray, Name = "ScrollbarBg" };
+            Background.Value.Children.Clear();
 
             Thumb = thumb?.Clone() as Panel ?? new Panel()
             { PanelColor = Color.LightGray, Name = "ScrollbarThumb" };
@@ -95,9 +96,9 @@ namespace Eve.UI.Controls
             scrollbar.Background.Value = (scrollbar.Children[0] as Panel)!;
             scrollbar.Thumb.Value.Position.Updated += v => Console.WriteLine(v);*/
 
-            Control[] a = [.. Children.Skip(2)];
-            Console.WriteLine(a.Count());
             //scrollbar.WithChildren(a);
+
+            Console.WriteLine( scrollbar.Background.Value.Children.Count );
 
             return scrollbar;
         }

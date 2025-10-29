@@ -27,7 +27,7 @@ namespace Eve.UI
         public T WithChildren<T>(params Control[] children) where T : Control
         {
             foreach (var c in children) { c.Parent = this; }
-            Children = [..children];
+            Children.AddRange(children);
             return (T)this;
         }
 

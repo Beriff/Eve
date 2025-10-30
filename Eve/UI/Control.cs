@@ -21,7 +21,7 @@ namespace Eve.UI
 
         // Hierarchy
         public Control? Parent;
-        public List<Control> Children = [];
+        public ObservableList<Control> Children = [];
         public string Name = "Control";
 
         public T WithChildren<T>(params Control[] children) where T : Control
@@ -117,7 +117,7 @@ namespace Eve.UI
         public Observable<T> GetLocalObservable<T>(T value)
         {
             var observable = new Observable<T>(value);
-            observable.Updated += _ => RequestRedraw();
+            observable.Updated += ("UI_Redraw", _ => RequestRedraw());
             return observable;
         }
 

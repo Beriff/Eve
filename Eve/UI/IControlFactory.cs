@@ -17,7 +17,13 @@ namespace Eve.UI
     public class CompositeControlBlueprint(Control root)
     {
         protected Control CompositeControlRoot = root;
-        public Control GetInstance() { return (CompositeControlRoot.Clone() as Control)!; }
+        public event Action<Control> Instantiated = new(_ => { });
+        public Control GetInstance() 
+        {
+            var root = (CompositeControlRoot.Clone() as Control)!;
+            Instantiated.Invoke(root);
+            return root; 
+        }
     }
 
     /// <summary>

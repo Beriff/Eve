@@ -8,8 +8,10 @@ using System.Text;
 
 namespace Eve.UI.Controls
 {
-    public class ScrollPanelFactory : IControlAbstractFactory
+    using ScrollPanelHooks = (Panel Background, VScrollbar scrollbar);
+    public class ScrollPanelFactory : IControlAbstractFactory<ScrollPanelHooks>
     {
+
         public Panel Background;
         public VScrollbar ScrollbarVertical;
 
@@ -24,31 +26,57 @@ namespace Eve.UI.Controls
             // invoked by scroll_area.Children.Updated
             return () =>
             {
+
                 Control scrollArea = scrollPanelEntry.Children[0];
                 VScrollbar vscroll = (scrollPanelEntry.Children[1] as VScrollbar)!;
                 Rectangle areaViewport = scrollArea.Bounds;
 
-                if (scrollArea.Children.Count == 0) return;
+                if (scrollArea.Children.Count == 0)
+                    return;
 
-                float topmost = scrollArea.Children.AsReadonly().Min(c => c.AbsolutePosition.Y);
-                float bottom = scrollArea.Children.AsReadonly().Max(c => c.AbsolutePosition.Y);
-                float scrollable_vert_area = bottom - topmost - areaViewport.Height;
-                float thumbProg = areaViewport.X / scrollable_vert_area;
+                // Find content bounds
+                Control topmost = scrollArea.Children.AsReadonly().MinBy(c => c.AbsolutePosition.Y)!;
+                Control bottom = scrollArea.Children.AsReadonly().MaxBy(c => c.AbsolutePosition.Y + c.PixelSize.Y)!;
 
+                float contentTop = topmost.AbsolutePosition.Y;
+                float contentBottom = bottom.AbsolutePosition.Y + bottom.PixelSize.Y;
+                float contentHeight = contentBottom - contentTop;
+                float viewportHeight = areaViewport.Height;
+
+                // avoid divide-by-zero when content fits fully
+                if (contentHeight <= viewportHeight)
+                {
+                    vscroll.ThumbSize.Value = 1f;
+                    vscroll.ThumbProgress.Value = 0f;
+                    return;
+                }
+
+                // Set scrollbar thumb size relative to visible portion
+                vscroll.ThumbSize.Value = viewportHeight / contentHeight;
+
+                // Re-hook the scroll event
                 vscroll.ThumbProgress.Updated -= "ScrollPanel_ThumbProgress";
                 vscroll.ThumbProgress.Updated += ("ScrollPanel_ThumbProgress", _ =>
                 {
-                    float offset = (bottom - topmost) * vscroll.ThumbProgress.Value;
-                    // offset each child of scroll_area by a calculated amount
+                    // how much we can scroll
+                    float scrollableHeight = contentHeight - viewportHeight;
+                    // compute scroll offset
+                    float offset = scrollableHeight * vscroll.ThumbProgress.Value;
+
+                    // apply offset to children
                     foreach (var child in scrollArea.Children.AsReadonly())
                     {
-                        child.Position.Value = child.Position.Value with { Absolute = new(0, offset) };
+                        child.Position.Value = child.Position.Value with
+                        {
+                            Absolute = new(0, -(offset - contentTop))
+                        };
                     }
                 });
+
             };
         }
 
-        public CompositeControlBlueprint GetBlueprint()
+        public CompositeControlBlueprint<ScrollPanelHooks> GetBlueprint()
         {
             // ScrollFrame structure:
             /*
@@ -57,11 +85,11 @@ namespace Eve.UI.Controls
                            -> hscroll
              */
 
-            var compositeRoot = Background.Clone() as Panel;
+            var compositeRoot = (Background.Clone() as Panel)!;
             var scrollArea = new Panel() 
-            { PanelColor = Color.Transparent, Size = new LayoutUnit(1,1,-8,0) };
+            { PanelColor = Color.Transparent, Size = new LayoutUnit(1,1,-8,0), Name = "ScrollPanelArea" };
 
-            var vscroll = ScrollbarVertical.Clone() as VScrollbar;
+            var vscroll = (ScrollbarVertical.Clone() as VScrollbar)!;
 
             vscroll.Origin = new Vector2(1, 0);
             vscroll.Position = LayoutUnit.FromRel(1, 0);
@@ -72,7 +100,9 @@ namespace Eve.UI.Controls
                 scrollArea, vscroll
             );
 
-            var blueprint = new CompositeControlBlueprint(compositeRoot);
+            var blueprint = new CompositeControlBlueprint<ScrollPanelHooks>
+                (compositeRoot, c => (c.Children[0] as Panel, c.Children[1] as VScrollbar)!);
+
             blueprint.Instantiated += (root) =>
             {
                 var e = GetInnerBoundsRecalculation(root);

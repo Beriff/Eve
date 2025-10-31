@@ -14,24 +14,27 @@ namespace Eve.UI
     /// click events and changing the label.
     /// </para>
     /// </summary>
-    public class CompositeControlBlueprint(Control root)
+    public class CompositeControlBlueprint<Hooks>(Control root, Func<Control, Hooks> extractor) where Hooks : ITuple
     {
         protected Control CompositeControlRoot = root;
         public event Action<Control> Instantiated = new(_ => { });
+        public Func<Control, Hooks> GetHooks = extractor;
         public Control GetInstance() 
         {
             var root = (CompositeControlRoot.Clone() as Control)!;
             Instantiated.Invoke(root);
             return root; 
         }
+
+        public (Control, Hooks) GetHookedInstance() { var i = GetInstance(); return (i, GetHooks(i)); }
     }
 
     /// <summary>
     /// Represents a class that creates an <see cref="CompositeControlBlueprint"/> for further
     /// instantiation of composite controls.
     /// </summary>
-    public interface IControlAbstractFactory
+    public interface IControlAbstractFactory<Handles> where Handles : ITuple
     {
-        public CompositeControlBlueprint GetBlueprint();
+        public CompositeControlBlueprint<Handles> GetBlueprint();
     }
 }

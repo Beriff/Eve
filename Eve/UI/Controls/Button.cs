@@ -4,15 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+
+
 namespace Eve.UI.Controls
 {
-    public class ButtonFactory : IControlAbstractFactory
+    using ButtonHandles = (Panel Background, Label TextLabel);
+    public class ButtonFactory : IControlAbstractFactory<ButtonHandles>
     {
         public Panel Backdrop;
 
-        public static readonly CompositeControlBlueprint SimpleButton = new ButtonFactory(new()).GetBlueprint();
+        public static readonly CompositeControlBlueprint<ButtonHandles> SimpleButton = new ButtonFactory(new()).GetBlueprint();
 
-        public CompositeControlBlueprint GetBlueprint()
+        public CompositeControlBlueprint<ButtonHandles> GetBlueprint()
         {
             var composite_root = ((Panel)Backdrop.Clone()).WithChildren(
                 new Label() { Size = LayoutUnit.Full, Name = "ButtonLabel", Text = "Button" }
@@ -23,7 +26,7 @@ namespace Eve.UI.Controls
             composite_root!.InputModules.Add(new ClickInputModule(tunnel: true));
 
 
-            return new(composite_root);
+            return new(composite_root, c => (c as Panel, c.Children[0] as Label)! );
         }
 
         public ButtonFactory(Panel panel)

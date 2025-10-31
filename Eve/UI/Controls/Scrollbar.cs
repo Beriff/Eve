@@ -56,6 +56,7 @@ namespace Eve.UI.Controls
             {
                 v = Math.Clamp(v, 0, 1);
                 Thumb.Value.Position.QuietSet(LayoutUnit.FromRel(0, v * (1 - ThumbSize)));
+                ThumbProgress.QuietSet(v);
                 Thumb.Value.RequestRedraw();
             });
             

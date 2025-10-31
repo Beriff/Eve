@@ -36,12 +36,21 @@ namespace Eve
             Control.Initialize(GraphicsDevice);
             Theme.Initialize(Content);
 
+            var dummy1 = new Panel() 
+            { Position = LayoutUnit.FromRel(0), Size = LayoutUnit.FromAbs(30), PanelColor = Color.Red };
+            var dummy2 = (dummy1.Clone() as Panel)!;
+            dummy2.Position = LayoutUnit.FromRel(0, 2);
+            dummy2.PanelColor = Color.Green;
+
             Group = new();
 
-            Control scrollPanel = new ScrollPanelFactory(Group).GetBlueprint().GetInstance();
-            //Console.WriteLine((scrollPanel.Children[1] as VScrollbar).Thumb.Value.FindInputModule<DragInputModule>());
+            var (scrollPanel, (area, _)) = new ScrollPanelFactory(Group).GetBlueprint().GetHookedInstance();
+
             scrollPanel.Size = LayoutUnit.FromAbs(200, 100);
             scrollPanel.Position = LayoutUnit.FromAbs(20);
+
+            area.WithChildren(dummy1,dummy2);
+            
 
             Group += scrollPanel;
 

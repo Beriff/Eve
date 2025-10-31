@@ -43,7 +43,6 @@ namespace Eve.UI.Controls
                 float contentHeight = contentBottom - contentTop;
                 float viewportHeight = areaViewport.Height;
 
-                // avoid divide-by-zero when content fits fully
                 if (contentHeight <= viewportHeight)
                 {
                     vscroll.ThumbSize.Value = 1f;
@@ -51,27 +50,33 @@ namespace Eve.UI.Controls
                     return;
                 }
 
-                // Set scrollbar thumb size relative to visible portion
+                // Thumb size = visible area ratio
                 vscroll.ThumbSize.Value = viewportHeight / contentHeight;
 
-                // Re-hook the scroll event
+                // Cache initial positions
+                var originalPositions = scrollArea.Children.AsReadonly()
+                    .ToDictionary(c => c, c => c.Position.Value.Absolute.Y);
+
+                // Detach any previous handler
                 vscroll.ThumbProgress.Updated -= "ScrollPanel_ThumbProgress";
+
+                // Attach fresh handler
                 vscroll.ThumbProgress.Updated += ("ScrollPanel_ThumbProgress", _ =>
                 {
-                    // how much we can scroll
                     float scrollableHeight = contentHeight - viewportHeight;
-                    // compute scroll offset
                     float offset = scrollableHeight * vscroll.ThumbProgress.Value;
 
-                    // apply offset to children
                     foreach (var child in scrollArea.Children.AsReadonly())
                     {
+                        float originalY = originalPositions[child];
                         child.Position.Value = child.Position.Value with
                         {
-                            Absolute = new(0, -(offset - contentTop))
+                            Absolute = new(child.Position.Value.Absolute.X, originalY - offset)
                         };
                     }
-                });
+                }
+                );
+
 
             };
         }

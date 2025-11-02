@@ -23,6 +23,8 @@ namespace Eve.UI.ControlModules.Input
 
         public override void HandleTunnelling(Control self, InputEvent @event)
         {
+            base.HandleTunnelling(self, @event);
+
             if (!TunnellingMode) return;
 
             if (@event is MouseInputEvent mEvent)
@@ -64,6 +66,8 @@ namespace Eve.UI.ControlModules.Input
 
         public override void HandleBubbling(Control self, InputEvent @event)
         {
+            base.HandleBubbling(self, @event);
+
             if (TunnellingMode) return;
 
             if (@event is MouseInputEvent mEvent)

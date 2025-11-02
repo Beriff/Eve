@@ -34,6 +34,7 @@ namespace Eve.UI.Input
             MouseInfo mouseInputInfo = new(
                 CurrentMouseState.Position.ToVector2(),
                 (CurrentMouseState.Position - PreviousMouseState.Position).ToVector2(),
+                CurrentMouseState.ScrollWheelValue - PreviousMouseState.ScrollWheelValue,
                 dispatchPressType(
                     PreviousMouseState.LeftButton == ButtonState.Pressed, 
                     CurrentMouseState.LeftButton == ButtonState.Pressed

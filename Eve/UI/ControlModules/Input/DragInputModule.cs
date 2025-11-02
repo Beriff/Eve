@@ -22,7 +22,8 @@ namespace Eve.UI.ControlModules.Input
 
         public override void HandleBubbling(Control self, InputEvent @event)
         {
-            
+            base.HandleBubbling(self, @event);
+
             if (@event is MouseInputEvent mEvent)
             {
                 if (mEvent.MouseInfo.LMBPressType == ButtonPressType.Pressed)

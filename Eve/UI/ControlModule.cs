@@ -16,12 +16,28 @@ namespace Eve.UI
 
     public class ControlInputModule : ControlModule
     {
-        public virtual void HandleTunnelling(Control self, InputEvent @event) { }
-        public virtual void HandleBubbling(Control self, InputEvent @event) { }
+        protected Action<Control, InputEvent> TunnellingHandler = (_,_) => { };
+        protected Action<Control, InputEvent> BubblingHandler = (_,_) => { };
+
+        public virtual void HandleTunnelling(Control self, InputEvent @event) { TunnellingHandler(self, @event); }
+        public virtual void HandleBubbling(Control self, InputEvent @event) { BubblingHandler(self, @event); }
+
+        public ControlInputModule
+            (Action<Control, InputEvent>? tunnelHandler = null, Action<Control, InputEvent>? bubbleHandler = null) 
+        {
+            TunnellingHandler = tunnelHandler ?? new((_,_) => { });
+            BubblingHandler = bubbleHandler ?? new((_, _) => { });
+        }
+
+        public ControlInputModule() { }
 
         public override object Clone()
         {
-            return new ControlInputModule();
+            return new ControlInputModule()
+            {
+                TunnellingHandler = TunnellingHandler,
+                BubblingHandler = BubblingHandler
+            };
         }
     }
 }

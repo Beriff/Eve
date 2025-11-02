@@ -41,15 +41,23 @@ namespace Eve
             var dummy2 = (dummy1.Clone() as Panel)!;
             dummy2.Position = LayoutUnit.FromRel(0, 2);
             dummy2.PanelColor = Color.Green;
+            var dummy3 = (dummy1.Clone() as Panel)!;
+            dummy3.Position = LayoutUnit.FromRel(0, 3);
+            dummy3.PanelColor = Color.Green;
 
             Group = new();
 
             var (scrollPanel, (area, _)) = new ScrollPanelFactory(Group).GetBlueprint().GetHookedInstance();
 
+            
+
             scrollPanel.Size = LayoutUnit.FromAbs(200, 100);
             scrollPanel.Position = LayoutUnit.FromAbs(20);
 
-            area.WithChildren(dummy1,dummy2);
+            (scrollPanel as Panel).PanelColor = Color.Yellow;
+            Console.WriteLine(area.Bounds);
+
+            area.WithChildren(dummy1,dummy2,dummy3);
             
 
             Group += scrollPanel;

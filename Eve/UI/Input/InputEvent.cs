@@ -31,10 +31,11 @@ namespace Eve.UI.Input
         public readonly ButtonPressType KeyPressType = pType;
     }
     public readonly record struct MouseInfo
-        (Vector2 pos, Vector2 delta, ButtonPressType lmb, ButtonPressType rmb, ButtonPressType mmb)
+        (Vector2 pos, Vector2 delta, int scrollDelta, ButtonPressType lmb, ButtonPressType rmb, ButtonPressType mmb)
     {
         public readonly Vector2 Position = pos;
         public readonly Vector2 Delta = delta;
+        public readonly int ScrollDelta = scrollDelta;
         public readonly ButtonPressType LMBPressType = lmb;
         public readonly ButtonPressType RMBPressType = rmb;
         public readonly ButtonPressType MMBPressType = mmb;

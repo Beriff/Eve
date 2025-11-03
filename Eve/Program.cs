@@ -1,2 +1,2 @@
-﻿using var game = new Eve.Game1();
+﻿using var game = new Eve.EveProgram();
 game.Run();

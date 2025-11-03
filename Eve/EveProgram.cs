@@ -9,14 +9,14 @@ using System;
 
 namespace Eve
 {
-    public class Game1 : Game
+    public class EveProgram : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
         public UIGroup Group;
 
-        public Game1()
+        public EveProgram()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -54,7 +54,7 @@ namespace Eve
             scrollPanel.Size = LayoutUnit.FromAbs(200, 100);
             scrollPanel.Position = LayoutUnit.FromAbs(20);
 
-            (scrollPanel as Panel).PanelColor = Color.Yellow;
+            //(scrollPanel as Panel)!.PanelColor = Color.Transparent;
             Console.WriteLine(area.Bounds);
 
             area.WithChildren(dummy1,dummy2,dummy3);

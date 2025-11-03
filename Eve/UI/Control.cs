@@ -1,5 +1,8 @@
-﻿using Eve.Model;
+﻿#define EVEUI_DEBUG
+
+using Eve.Model;
 using Eve.UI.Input;
+using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -8,6 +11,8 @@ using System.Linq;
 
 namespace Eve.UI
 {
+
+#pragma warning disable CS8618
     /// <summary>
     /// Base UI Control class, implementing positioning and hierarchical logic.
     /// Rendering implementation is left to the inheriting classes
@@ -67,7 +72,28 @@ namespace Eve.UI
         protected bool NeedsRedraw = true;
 
         protected virtual void DrawControl(SpriteBatch sb) { }
-        protected virtual void DrawControlTop(SpriteBatch sb) { }
+        protected virtual void DrawControlTop(SpriteBatch sb) 
+        {
+            #if EVEUI_DEBUG
+            // draw control bounds
+            int sizex = (int)PixelSize.X;
+            int sizey = (int)PixelSize.Y;
+            Texture2D t = new(sb.GraphicsDevice, sizex, sizey);
+            Color[] data = new Color[sizex * sizey];
+            
+            for (int y = 0; y < sizey; y++)
+            {
+                for (int x = 0; x < sizex; x++)
+                {
+                    if (x == 0 || y == 0 || y == sizey - 1 || x == sizex - 1)
+                        data[x + y * sizex] = Color.Red;
+                }
+            }
+            t.SetData(data);
+            sb.Draw(t, Vector2.Zero, Color.White);
+            sb.DrawString(Theme.GetFont(10), Name, Vector2.One, Color.White);
+            #endif
+        }
         public virtual RenderTarget2D GetRenderTarget(SpriteBatch sb)
         {
             if(NeedsRedraw)
@@ -179,4 +205,5 @@ namespace Eve.UI
 
         public override string ToString() => Name;
     }
+#pragma warning restore
 }

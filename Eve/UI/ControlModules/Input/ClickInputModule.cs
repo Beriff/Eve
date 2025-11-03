@@ -1,4 +1,5 @@
-﻿using Eve.UI.Input;
+﻿using Eve.Model;
+using Eve.UI.Input;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -6,12 +7,12 @@ using System.Text;
 
 namespace Eve.UI.ControlModules.Input
 {
-    public class ClickInputModule(bool tunnel = false) : ControlInputModule
+    public class ClickInputModule : ControlInputModule
     {
 
-        public event Action<MouseInfo> OnRightClick = new(_ => { });
-        public event Action<MouseInfo> OnLeftClick = new(_ => { });
-        public event Action<MouseInfo> OnMiddleClick = new(_ => { });
+        public NamedEvent<MouseInfo> OnRightClick = new();
+        public NamedEvent<MouseInfo> OnLeftClick = new();
+        public NamedEvent<MouseInfo> OnMiddleClick = new();
 
         public bool ConsumeEvent { get; set; } = true;
 
@@ -19,7 +20,17 @@ namespace Eve.UI.ControlModules.Input
         protected bool LMBClickedInside = false;
         protected bool MMBClickedInside = false;
 
-        protected bool TunnellingMode = tunnel;
+        protected bool TunnellingMode;
+
+        public ClickInputModule
+            (bool tunnel = false, Action<MouseInfo>? rmbHook = null, Action<MouseInfo>? lmbHook = null, Action<MouseInfo>? mmbHook = null) 
+            : base(null,null)
+        {
+            TunnellingMode = tunnel;
+            if (rmbHook != null) OnRightClick += ("DefaultHandler", rmbHook);
+            if (lmbHook != null) OnLeftClick += ("DefaultHandler", lmbHook);
+            if (mmbHook != null) OnMiddleClick += ("DefaultHandler", mmbHook);
+        }
 
         public override void HandleTunnelling(Control self, InputEvent @event)
         {
@@ -29,6 +40,7 @@ namespace Eve.UI.ControlModules.Input
 
             if (@event is MouseInputEvent mEvent)
             {
+                
                 if (mEvent.MouseInfo.RMBPressType == ButtonPressType.Pressed)
                 {
                     RMBClickedInside = true;

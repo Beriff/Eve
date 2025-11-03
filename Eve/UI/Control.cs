@@ -1,4 +1,4 @@
-﻿#define EVEUI_DEBUG
+﻿//#define EVEUI_DEBUG
 
 using Eve.Model;
 using Eve.UI.Input;
@@ -70,6 +70,7 @@ namespace Eve.UI
         // Rendering
         protected RenderTarget2D LocalRenderTarget;
         protected bool NeedsRedraw = true;
+        public Observable<bool> Visible { get; set => field = GetLocalObservable(value.Value); }
 
         protected virtual void DrawControl(SpriteBatch sb) { }
         protected virtual void DrawControlTop(SpriteBatch sb) 
@@ -91,7 +92,7 @@ namespace Eve.UI
             }
             t.SetData(data);
             sb.Draw(t, Vector2.Zero, Color.White);
-            sb.DrawString(Theme.GetFont(10), Name, Vector2.One, Color.White);
+            sb.DrawString(Theme.GetFont(14), Name, Vector2.One, Color.Black);
             #endif
         }
         public virtual RenderTarget2D GetRenderTarget(SpriteBatch sb)
@@ -106,9 +107,12 @@ namespace Eve.UI
                 sb.GraphicsDevice.SetRenderTarget(LocalRenderTarget);
                 sb.GraphicsDevice.Clear(Color.Transparent);
 
-                sb.Begin();
-                DrawControl(sb);
-                sb.End();
+                if(Visible.Value)
+                {
+                    sb.Begin();
+                    DrawControl(sb);
+                    sb.End();
+                }
 
                 sb.Begin();
                 for(int i = 0; i < childTextures.Count; i++)
@@ -117,9 +121,12 @@ namespace Eve.UI
                 }
                 sb.End();
 
-                sb.Begin();
-                DrawControlTop(sb);
-                sb.End();
+                if (Visible.Value)
+                {
+                    sb.Begin();
+                    DrawControlTop(sb);
+                    sb.End();
+                }
 
                 NeedsRedraw = false;
                 return LocalRenderTarget;
@@ -173,6 +180,7 @@ namespace Eve.UI
             control.Position.Value = Position.Value;
             control.Size.Value = Size.Value;
             control.Origin.Value = Origin.Value;
+            control.Visible.Value = Visible.Value;
             if(copyInputModules)
                 control.InputModules = InputModules.Select(module => module.Clone() as ControlInputModule).ToList()!;
 
@@ -197,10 +205,11 @@ namespace Eve.UI
 
         public Control()
         {
-            Name = "";
+            Name = $"<{GetType().Name}>";
             Position = GetLocalObservable(LayoutUnit.Zero);
             Size = GetLocalObservable(LayoutUnit.Full);
             Origin = GetLocalObservable(Vector2.Zero);
+            Visible = GetLocalObservable(true);
         }
 
         public override string ToString() => Name;

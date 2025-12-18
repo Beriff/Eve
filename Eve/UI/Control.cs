@@ -32,11 +32,45 @@ namespace Eve.UI
         public NamedEvent OnMouseEnter = new();
         public NamedEvent OnMouseLeave = new();
 
+        // Portal Viewing
+        public ObservableList<Control> PortalViews = [];
+        public Observable<bool> IsPortalTranslating { get; set => field = GetLocalObservable(value.Value); } = false;
+
+        public void AddToPortal(Control portalee)
+        {
+            PortalViews.Add(portalee);
+            portalee.IsPortalTranslating = true;
+        }
+
+        public void RemoveFromPortal(Control portalee)
+        {
+            PortalViews.Remove(portalee);
+            portalee.IsPortalTranslating = false;
+        }
+
+        public Control GetRoot()
+        {
+            Control r = this;
+            while (r.Parent != null) { r = r.Parent; }
+            return r;
+        }
+
         public T WithChildren<T>(params Control[] children) where T : Control
         {
             foreach (var c in children) { c.Parent = this; }
             Children.AddRange(children);
             return (T)this;
+        }
+
+        public Control? Find(Predicate<Control> f)
+        {
+            foreach(var child in Children)
+            {
+                if (f(child)) return child;
+                var r = child.Find(f);
+                if (r != null) return r;
+            }
+            return null;
         }
 
         public Control WithChildren(params Control[] children) => WithChildren<Control>(children);
@@ -104,8 +138,10 @@ namespace Eve.UI
             {
                 // create own texture container
                 LocalRenderTarget = new(sb.GraphicsDevice, (int)PixelSize.X, (int)PixelSize.Y);
+
                 // get (or generate) children textures
                 var childTextures = Children.Select(x => x.GetRenderTarget(sb)).ToList();
+                var portalViewTextures = PortalViews.Select(x => x.GetRenderTarget(sb)).ToList();
 
                 sb.GraphicsDevice.SetRenderTarget(LocalRenderTarget);
                 sb.GraphicsDevice.Clear(Color.Transparent);
@@ -120,7 +156,12 @@ namespace Eve.UI
                 sb.Begin();
                 for(int i = 0; i < childTextures.Count; i++)
                 {
+                    if (Children[i].IsPortalTranslating) continue;
                     sb.Draw(childTextures[i], Children[i].PixelPosition, Color.White);
+                }
+                for(int i = 0; i < portalViewTextures.Count; i++)
+                {
+                    sb.Draw(portalViewTextures[i], PortalViews[i].PixelPosition, Color.White);
                 }
                 sb.End();
 

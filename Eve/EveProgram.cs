@@ -39,13 +39,27 @@ namespace Eve
 
             Group = new();
 
-            var (button, (bg, _)) = ButtonFactory.SimpleButtonFactory(
-                Group.EffectGroup, 
-                new Panel() { PanelColor = Color.Gray }
-            ).GetHookedInstance();
-            button.Size.Value = LayoutUnit.FromAbs(100, 50);
+            Control root = new Panel() { PanelColor = Color.Green, Size = LayoutUnit.Full }
+            .WithChildren(
+                new Panel() { PanelColor = Color.Blue, Size = LayoutUnit.FromRel(.5f) }
+                .WithChildren(
+                    new Panel() { 
+                        PanelColor = Color.Red, 
+                        Name = "Test", 
+                        Position = LayoutUnit.FromRel(.5f), 
+                        Size = LayoutUnit.Full
+                    }.WithChildren(
+                        new Panel() { PanelColor = Color.White,
+                            Position = LayoutUnit.FromRel(.5f),
+                            Size = LayoutUnit.Full
+                        }
+                    )
+                )
+            );
+            Control test = root.Find(c => c.Name == "Test")!;
+            root.AddToPortal(test);
 
-            Group += button;
+            Group += root;
         }
 
         protected override void Update(GameTime gameTime)

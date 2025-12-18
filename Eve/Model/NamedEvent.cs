@@ -22,6 +22,14 @@ namespace Eve.Model
             Event += handler_tuple.handler;
         }
 
+        public void operator += (Action<T> handler)
+        {
+            if (Handlers.ContainsKey("")) RemoveHandler("");
+
+            Handlers.Add("", handler);
+            Event += handler;
+        }
+
         protected void RemoveHandler(string name)
         {
             if (!Handlers.TryGetValue(name, out Action<T>? value)) return;
@@ -63,6 +71,14 @@ namespace Eve.Model
 
             Handlers.Add(handler_tuple.name, _ => handler_tuple.handler());
             Event += _ => handler_tuple.handler();
+        }
+
+        public void operator +=(Action handler)
+        {
+            if (Handlers.ContainsKey("")) RemoveHandler("");
+
+            Handlers.Add("", _ => handler());
+            Event += _ => handler();
         }
 
         public void Invoke() => Invoke(new());

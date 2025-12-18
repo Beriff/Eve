@@ -2,6 +2,7 @@
 using Eve.UI;
 using Eve.UI.ControlModules.Input;
 using Eve.UI.Controls;
+using Eve.UI.Effects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -36,11 +37,13 @@ namespace Eve
             Control.Initialize(GraphicsDevice);
             Theme.Initialize(Content);
 
-            var checkbox = new Checkbox() { Size = LayoutUnit.FromAbs(10), Position = LayoutUnit.FromAbs(10) };
+             var (button, (bg, _)) = ButtonFactory.SimpleButton.GetHookedInstance();
+            button.Size.Value = LayoutUnit.FromAbs(100, 50);
+            bg.PanelColor = Color.Gray;
 
             Group = new();
 
-            Group += checkbox;
+            Group += button;
         }
 
         protected override void Update(GameTime gameTime)
@@ -48,7 +51,7 @@ namespace Eve
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            Group.Update();
+            Group.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             base.Update(gameTime);
         }
 

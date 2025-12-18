@@ -29,6 +29,9 @@ namespace Eve.UI
         public ObservableList<Control> Children = [];
         public string Name = "Control";
 
+        public NamedEvent OnMouseEnter = new();
+        public NamedEvent OnMouseLeave = new();
+
         public T WithChildren<T>(params Control[] children) where T : Control
         {
             foreach (var c in children) { c.Parent = this; }

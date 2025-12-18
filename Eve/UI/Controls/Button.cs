@@ -25,8 +25,16 @@ namespace Eve.UI.Controls
             // propagating to button's parents (tunnel handling)
             composite_root!.InputModules.Add(new ClickInputModule(tunnel: true));
 
+            CompositeControlBlueprint<ButtonHandles> blueprint =
+                new(composite_root, c => (c as Panel, c.Children[0] as Label)!);
+            blueprint.Instantiated += root =>
+            {
+                // button tints on hover
+                root.OnMouseEnter += ("sfg", () => {  });
+                root.OnMouseLeave += ("sfghh", () => {  });
+            };
 
-            return new(composite_root, c => (c as Panel, c.Children[0] as Label)! );
+            return blueprint;
         }
 
         public ButtonFactory(Panel panel)

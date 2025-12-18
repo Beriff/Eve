@@ -1,4 +1,5 @@
 ﻿using Eve.UI.Controls;
+using Eve.UI.Effects;
 using Eve.UI.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,15 +15,23 @@ namespace Eve.UI
         public Control Root { get; set; }
         public InputController InputController { get; set; }
         public List<Control> ModalControls { get; set; } = [];
+        public EffectGroup EffectGroup { get; set; } = new();
 
+        protected List<Control> PreviousPath = [];
         public void operator+=(Control c)
         {
             Root = c;
         }
 
-        public void Update()
+        public void operator += (TimedEffect e)
+        {
+            EffectGroup.Add(e);
+        }
+
+        public void Update(float dt)
         {
             InputController.Update();
+            EffectGroup.Update(dt);
         }
 
         public void Render(SpriteBatch sb)
@@ -53,7 +62,7 @@ namespace Eve.UI
             Control currentControl = Root!;
 
             // do not fire any events if the mouse is outside the root control
-            if (!currentControl.Bounds.Contains(mPos)) return;
+            if (!currentControl.Bounds.Contains(mPos)) { goto End_Input; };
 
             while (true)
             {
@@ -66,21 +75,36 @@ namespace Eve.UI
                 }
                 break; // the click wasnt inside any of the children
             }
-            if (path.Count == 0) return;
+
+            if (path.Count == 0) goto End_Input;
 
             // tunneling phase (root -> leaf)
             foreach (var child in path)
             {
                 child.HandleInputTunnelling(@event);
-                if (@event.Consumed) return;
+                if (@event.Consumed) goto End_Input;
             }
 
             // bubbling phase (leaf -> root)
             foreach (var child in path.Reverse<Control>())
             {
                 child.HandleInputBubbling(@event);
-                if (@event.Consumed) return;
+                if (@event.Consumed) goto End_Input;
             }
+
+        End_Input:
+            // before propagating the event down the calculated path
+            // invoke all the hover events based on the
+            // path difference
+            // (suboptimal implementation)
+            var mouseLeft = PreviousPath.Where(c => !path.Contains(c));
+            var mouseEntered = path.Where(c => !PreviousPath.Contains(c));
+
+            foreach (var child in mouseLeft) child.OnMouseLeave.Invoke();
+            foreach (var child in mouseEntered) child.OnMouseEnter.Invoke();
+
+            PreviousPath = path;
+            return;
         }
 
         public UIGroup()

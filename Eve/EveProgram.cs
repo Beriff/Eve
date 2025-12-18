@@ -37,11 +37,13 @@ namespace Eve
             Control.Initialize(GraphicsDevice);
             Theme.Initialize(Content);
 
-             var (button, (bg, _)) = ButtonFactory.SimpleButton.GetHookedInstance();
-            button.Size.Value = LayoutUnit.FromAbs(100, 50);
-            bg.PanelColor = Color.Gray;
-
             Group = new();
+
+            var (button, (bg, _)) = ButtonFactory.SimpleButtonFactory(
+                Group.EffectGroup, 
+                new Panel() { PanelColor = Color.Gray }
+            ).GetHookedInstance();
+            button.Size.Value = LayoutUnit.FromAbs(100, 50);
 
             Group += button;
         }
